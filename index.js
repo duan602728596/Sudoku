@@ -155,7 +155,7 @@ function handleInputNumberClick(event) {
 
   const hasValue = palaceInitialState[checkState[0]][checkState[1]] !== null;
 
-  if (palaceInitialState[checkState[0]][checkState[1]] !== null && !checkState[4]) return;
+  if (hasValue && !checkState[4]) return;
 
   const inputNumber = Number(event.target.dataset.input);
   const checkGroupResult = checkGroup(palaceInitialState[checkState[0]], inputNumber); // 检查宫是否有重复 {checkState[0],r}
