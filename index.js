@@ -29,8 +29,8 @@ const cacheColArray = [];
  */
 const cacheRowArray = [];
 
-/** @type { [number, number, number, number] | null } - 记录[x坐标，y坐标，行，列] */
-let check = null;
+/** @type { [number, number, number, number, 1 | 0] | null } - 记录[x坐标，y坐标，行，列，是否可编辑] */
+let checkState = null;
 
 /* =============== 算法 =============== */
 /**
@@ -51,8 +51,10 @@ function checkGroup(arr, value) {
  * @return { Array<[number, number]> | null }
  */
 function checkCol(value) {
-  for (const item of cacheColArray[check[2]]) {
-    if (value === item.value) return item.coordinate;
+  for (const item of cacheColArray[checkState[2]]) {
+    if (value === item.value && !(item.coordinate[0] === checkState[0] && item.coordinate[1] === checkState[1])) {
+      return item.coordinate;
+    }
   }
 
   return null;
@@ -64,8 +66,10 @@ function checkCol(value) {
  * @return { Array<[number, number]> | null }
  */
 function checkRow(value) {
-  for (const item of cacheRowArray[check[3]]) {
-    if (value === item.value) return item.coordinate;
+  for (const item of cacheRowArray[checkState[3]]) {
+    if (value === item.value && !(item.coordinate[0] === checkState[0] && item.coordinate[1] === checkState[1])) {
+      return item.coordinate;
+    }
   }
 
   return null;
@@ -91,6 +95,25 @@ function addErrorAnimation(x, y) {
   if (!e.classList.contains('palace-item-error')) e.classList.add('palace-item-error');
 }
 
+/* 删除旧的状态 */
+function removeOldInput() {
+  palaceInitialState[checkState[0]][checkState[1]] = null;
+
+  for (const item of cacheColArray[checkState[2]]) {
+    if (item.coordinate[0] === checkState[0] && item.coordinate[1] === checkState[1] ) {
+      cacheColArray[checkState[2]].splice(cacheColArray[checkState[2]].indexOf(item), 1);
+      break;
+    }
+  }
+
+  for (const item of cacheRowArray[checkState[3]]) {
+    if (item.coordinate[0] === checkState[0] && item.coordinate[1] === checkState[1] ) {
+      cacheRowArray[checkState[3]].splice(cacheRowArray[checkState[3]].indexOf(item), 1);
+      break;
+    }
+  }
+}
+
 /* =============== 事件监听 =============== */
 /* 错误动画的结束事件 */
 function handleCheckHasErrorAnimationEnd(event) {
@@ -104,11 +127,12 @@ function handleCheckHasErrorAnimationEnd(event) {
 /* item添加点击事件 */
 function handlePalaceItemClick(event) {
   // 记录坐标点
-  check = [
+  checkState = [
     Number(event.target.dataset.xIndex),
     Number(event.target.dataset.yIndex),
     Number(event.target.dataset.col),
     Number(event.target.dataset.row),
+    Number(event.target.dataset.canEdit),
   ];
 
   // 清除旧选中样式
@@ -117,55 +141,60 @@ function handlePalaceItemClick(event) {
   document.querySelector('.palace-ckecked-item-bg')?.classList.remove('palace-ckecked-item-bg');
 
   // 添加新选中样式
-  document.querySelector(`[data-group-index="${ check[0] }"]`).classList.add('palace-ckecked-bg');
-  document.querySelectorAll(`[data-col="${ check[2] }"]`)
+  document.querySelector(`[data-group-index="${ checkState[0] }"]`).classList.add('palace-ckecked-bg');
+  document.querySelectorAll(`[data-col="${ checkState[2] }"]`)
     .forEach((e) => e.classList.add('palace-ckecked-bg'));
-  document.querySelectorAll(`[data-row="${ check[3] }"]`)
+  document.querySelectorAll(`[data-row="${ checkState[3] }"]`)
     .forEach((e) => e.classList.add('palace-ckecked-bg'));
   event.target.classList.add('palace-ckecked-item-bg');
 }
 
 /* 选中后点击按钮事件 */
 function handleInputNumberClick(event) {
-  if (check === null) return;
+  if (checkState === null) return;
 
-  if (palaceInitialState[check[0]][check[1]] !== null) return;
+  const hasValue = palaceInitialState[checkState[0]][checkState[1]] !== null;
+
+  if (palaceInitialState[checkState[0]][checkState[1]] !== null && !checkState[4]) return;
 
   const inputNumber = Number(event.target.dataset.input);
-  const checkGroupResult = checkGroup(palaceInitialState[check[0]], inputNumber); // 检查宫是否有重复 {check[0],r}
+  const checkGroupResult = checkGroup(palaceInitialState[checkState[0]], inputNumber); // 检查宫是否有重复 {checkState[0],r}
   const checkColResult = checkCol(inputNumber); // 检查行是否有重复
   const checkRowResult = checkRow(inputNumber); // 检查列是否有重复
 
-  const e = document.querySelector(`[data-x-index="${ check[0] }"][data-y-index="${ check[1] }"]`);
-
-  e.innerText = inputNumber;
-  e.classList.add('palace-item-input');
+  const e = document.querySelector(`[data-x-index="${ checkState[0] }"][data-y-index="${ checkState[1] }"]`);
 
   // 没有重复
   if (checkGroupResult === null && checkColResult === null && checkRowResult === null) {
-    palaceInitialState[check[0]][check[1]] = inputNumber;
+    removeOldInput();
+    e.innerText = inputNumber;
+    palaceInitialState[checkState[0]][checkState[1]] = inputNumber;
 
     const o = {
       value: inputNumber,
-      coordinate: [check[0], check[1]]
+      coordinate: [checkState[0], checkState[1]]
     };
 
-    cacheColArray[check[2]].push(o);
-    cacheRowArray[check[3]].push(o);
+    cacheColArray[checkState[2]].push(o);
+    cacheRowArray[checkState[3]].push(o);
 
     checkAllInput();
     return;
   }
 
-  // 添加错误动画
-  if (checkGroupResult !== null) addErrorAnimation(check[0], checkGroupResult);
+  // 在没有值时添加错误动画
+  if (!hasValue) {
+    e.innerText = inputNumber;
 
-  if (checkColResult !== null) addErrorAnimation(...checkColResult);
+    if (checkGroupResult !== null) addErrorAnimation(checkState[0], checkGroupResult);
 
-  if (checkRowResult !== null) addErrorAnimation(...checkRowResult);
+    if (checkColResult !== null) addErrorAnimation(...checkColResult);
 
-  e.addEventListener('animationend', handleCheckHasErrorAnimationEnd, { once: true });
-  e.classList.add('palace-item-checked-error');
+    if (checkRowResult !== null) addErrorAnimation(...checkRowResult);
+
+    e.addEventListener('animationend', handleCheckHasErrorAnimationEnd, { once: true });
+    e.classList.add('palace-item-checked-error');
+  }
 }
 
 /* 初始化 */
@@ -182,6 +211,7 @@ function init() {
       const colIndex = Math.floor(j / 2);
       const rowIndex = j % 2;
       const [col, row] = [(groupColIndex * 2) + colIndex, (groupRowIndex * 2) + rowIndex];
+      const canNotEdit = !!palaceInitialState[i][j];
 
       if (palaceInitialState[i][j]) {
         cacheColArray[col] ??= [];
@@ -197,11 +227,12 @@ function init() {
       }
 
       groupHtml.push(`
-        <div class="palace-item handle-palace-item"
+        <div class="palace-item ${ canNotEdit ? '' :  'palace-item-input' }"
           data-x-index="${ i }"
           data-y-index="${ j }"
           data-col="${ col }"
           data-row="${ row }"
+          data-can-edit="${ canNotEdit ? '0' : '1' }"
         >
           ${ palaceInitialState[i][j] ?? '' }
         </div>
@@ -214,7 +245,7 @@ function init() {
   document.getElementById('palace-main').innerHTML = htmlArray.join('');
 
   // 添加点击事件
-  document.querySelectorAll('.handle-palace-item')
+  document.querySelectorAll('.palace-item')
     .forEach((e) => e.addEventListener('click', handlePalaceItemClick));
 
   // 按钮添加点击事件
