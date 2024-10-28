@@ -18,7 +18,7 @@ const palaceInitialState = [
  */
 
 /**
- * 缓存行的数组，用于判断行的值是否相同
+ * 缓存列的数组，用于判断列的值是否相同
  * @type { Array<Array<CacheItem>> }
  */
 const cacheColArray = [];
