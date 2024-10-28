@@ -1,0 +1,104 @@
+/* 宫格 */
+.palace-main, .palace-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.palace-group, .palace-item {
+  box-sizing: border-box;
+  width: 50%;
+  height: 50%;
+  border: 1px solid black;
+}
+
+.palace-main {
+  margin: 0 auto;
+  width: 300px;
+  height: 300px;
+  border: 2px solid black;
+}
+
+.palace-group {
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.palace-item {
+  align-content: center;
+  cursor: pointer;
+}
+
+/* 选中时的样式 */
+.palace-ckecked-bg {
+  background-color: #d6e4ff;
+}
+
+.palace-ckecked-item-bg {
+  background-color: #597ef7;
+}
+
+/* 错误样式 */
+@keyframes error-animation {
+  from {
+    font-size: 28px;
+  }
+
+  to {
+    font-size: 42px;
+  }
+}
+
+.palace-item-error {
+  background-color: #ffa39e;
+  color: #f00;
+}
+
+.palace-item-checked-error {
+  color: #f00;
+  animation-name: error-animation;
+  animation-duration: .3s;
+}
+
+/* 按钮 */
+.input-number-btn-group {
+  margin: 8px auto 0;
+  text-align: center;
+}
+
+.input-number-btn {
+  width: 60px;
+  height: 40px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* 胜利画面 */
+.win {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .3);
+  text-align: center;
+  align-content: center;
+}
+
+.win-image {
+  margin: 0 auto;
+  width: 500px;
+  height: 500px;
+  background-image: url('public/win.webp');
+}
+
+.win-text {
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.win-none {
+  display: none;
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="./index.css">
+  <title>数独</title>
+</head>
+<body>
+<!-- 宫格 -->
+<div class="palace-main" id="palace-main">
+  <!--
+  每一组的dom结构
+  <div class="palace-group">
+    <div class="palace-item" data-x-index="" data-y-index="">1</div>
+    <div class="palace-item" data-x-index="" data-y-index="">2</div>
+    <div class="palace-item" data-x-index="" data-y-index="">3</div>
+    <div class="palace-item" data-x-index="" data-y-index="">4</div>
+  </div>
+  -->
+</div>
+<!-- 输入按钮 -->
+<div class="input-number-btn-group">
+  <button class="input-number-btn" id="input-number-1" type="button" data-input="1">1</button>
+  <button class="input-number-btn" id="input-number-2" type="button" data-input="2">2</button>
+  <button class="input-number-btn" id="input-number-3" type="button" data-input="3">3</button>
+  <button class="input-number-btn" id="input-number-4" type="button" data-input="4">4</button>
+</div>
+<!-- 胜利 -->
+<div class="win win-none" id="win">
+  <div class="win-image"></div>
+  <p class="win-text">You win!</p>
+</div>
+<audio class="win-none" id="win-audio" src="./public/win.mp3"></audio>
+
+<script src="./index.js" type="module"></script>
+</body>
+</html>
