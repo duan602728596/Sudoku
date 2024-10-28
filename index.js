@@ -139,6 +139,7 @@ function handleInputNumberClick(event) {
   const e = document.querySelector(`[data-x-index="${ check[0] }"][data-y-index="${ check[1] }"]`);
 
   e.innerText = inputNumber;
+  e.classList.add('palace-item-input');
 
   // 没有重复
   if (checkGroupResult === null && checkColResult === null && checkRowResult === null) {

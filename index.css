@@ -31,11 +31,15 @@
 
 /* 选中时的样式 */
 .palace-ckecked-bg {
-  background-color: #d6e4ff;
+  background-color: #d7e1f8;
 }
 
 .palace-ckecked-item-bg {
-  background-color: #597ef7;
+  background-color: #849df4;
+}
+
+.palace-item-input {
+  color: #002ced;
 }
 
 /* 错误样式 */
