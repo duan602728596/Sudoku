@@ -95,6 +95,83 @@ function addErrorAnimation(x, y) {
   if (!e.classList.contains('palace-item-error')) e.classList.add('palace-item-error');
 }
 
+/* 检查行是否完全填写正确，并添加动画 */
+function addColFillingCompletedAnimation() {
+  if (cacheColArray[checkState[2]].length !== 4) return;
+
+  let i = 1;
+
+  while (true) {
+    const [m, n] = [
+      document.querySelector(`[data-col="${ checkState[2] }"][data-row="${ checkState[3] - i }"]`),
+      document.querySelector(`[data-col="${ checkState[2] }"][data-row="${ checkState[3] + i }"]`)
+    ];
+
+    if (!(m || n)) break;
+
+    if (m && !m.classList.contains('palace-filling-completed')) {
+      m.classList.add('palace-filling-completed');
+      m.addEventListener('animationend',
+        () => m.classList.remove('palace-filling-completed'), { once: true });
+    }
+
+    if (n && !n.classList.contains('palace-filling-completed')) {
+      n.classList.add('palace-filling-completed');
+      n.addEventListener('animationend',
+        () => n.classList.remove('palace-filling-completed'), { once: true });
+    }
+
+    i++;
+  }
+}
+
+/* 检查列是否完全填写正确，并添加动画 */
+function addRowFillingCompletedAnimation() {
+  if (cacheRowArray[checkState[3]].length !== 4) return;
+
+  let i = 1;
+
+  while (true) {
+    const [m, n] = [
+      document.querySelector(`[data-col="${ checkState[2] - i }"][data-row="${ checkState[3] }"]`),
+      document.querySelector(`[data-col="${ checkState[2] + i }"][data-row="${ checkState[3] }"]`)
+    ];
+
+    if (!(m || n)) break;
+
+    if (m && !m.classList.contains('palace-filling-completed')) {
+      m.classList.add('palace-filling-completed');
+      m.addEventListener('animationend',
+        () => m.classList.remove('palace-filling-completed'), { once: true });
+    }
+
+    if (n && !n.classList.contains('palace-filling-completed')) {
+      n.classList.add('palace-filling-completed');
+      n.addEventListener('animationend',
+        () => n.classList.remove('palace-filling-completed'), { once: true });
+    }
+
+    i++;
+  }
+}
+
+/* 检查组是否完全填写正确，并添加动画 */
+function addGroupFillingCompletedAnimation() {
+  if (palaceInitialState[checkState[0]].some((o) => o === null)) return;
+
+  for (let j = 0; j < palaceInitialState[checkState[0]].length; j++) {
+    if (checkState[1] === j) continue;
+
+    const e = document.querySelector(`[data-x-index="${ checkState[0] }"][data-y-index="${ j }"]`);
+
+    if (!e.classList.contains('palace-filling-completed')) {
+      e.classList.add('palace-filling-completed');
+      e.addEventListener('animationend',
+        () => e.classList.remove('palace-filling-completed'), { once: true });
+    }
+  }
+}
+
 /* 删除旧的状态 */
 function removeOldInput() {
   palaceInitialState[checkState[0]][checkState[1]] = null;
@@ -178,7 +255,11 @@ function handleInputNumberClick(event) {
     cacheColArray[checkState[2]].push(o);
     cacheRowArray[checkState[3]].push(o);
 
+    addColFillingCompletedAnimation();
+    addRowFillingCompletedAnimation();
+    addGroupFillingCompletedAnimation();
     checkAllInput();
+
     return;
   }
 

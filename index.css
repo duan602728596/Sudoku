@@ -64,6 +64,22 @@
   animation-duration: .3s;
 }
 
+/* 填充完毕动画 */
+@keyframes filling-completed-animation {
+  from {
+    background-color: #849df4;
+  }
+
+  to {
+    background-color: #d7e1f8;
+  }
+}
+
+.palace-filling-completed {
+  animation-name: filling-completed-animation;
+  animation-duration: .3s;
+}
+
 /* 按钮 */
 .input-number-btn-group {
   margin: 8px auto 0;
